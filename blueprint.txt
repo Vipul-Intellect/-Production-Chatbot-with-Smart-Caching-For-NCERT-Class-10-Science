@@ -1045,54 +1045,73 @@ The exact additional API fields can be finalized during implementation without c
 Current repository structure:
 
 ```text
-backend/
-├── __init__.py
-├── api/
-│   ├── __init__.py
-│   ├── routes.py
-│   └── schemas.py
-├── core/
-│   ├── __init__.py
-│   ├── config.py
-│   └── logger.py
-├── rag/
-│   ├── __init__.py
-│   ├── loader.py
-│   ├── chunker.py
-│   ├── embedder.py
-│   ├── vector_store.py
-│   └── generator.py
-├── cache/
-│   ├── __init__.py
-│   └── smart_cache.py
-├── observability/
-│   ├── __init__.py
-│   └── langsmith_tracer.py
-├── evaluation/
-│   ├── __init__.py
-│   └── ragas_eval.py
-├── memory/
-│   ├── __init__.py
-│   └── session.py
-└── main.py
+configs/
+├── document_metadata.csv
+
+data/
+├── pdf/
+├── faiss_index/
+└── cache_seed.jsonl
 
 frontend/
 ├── app.py
 └── components/
-
-data/
-├── raw/
-├── faiss_index/
-└── cache_seed.jsonl
 
 scripts/
 ├── ingest_pdfs.py
 └── seed_cache.py
 
 tests/
-├── backend/
+├── api/
+├── rag_app/
+├── cache/
 └── frontend/
 
+api/
+├── __init__.py
+├── routes.py
+└── schemas.py
+
+cache/
+├── __init__.py
+└── smart_cache.py
+
+memory/
+├── __init__.py
+└── session.py
+
+evaluation/
+├── __init__.py
+└── ragas_eval.py
+
+rag_app/
+├── __init__.py
+├── ingestion/
+│   ├── __init__.py
+│   └── loader.py
+├── chunking/
+│   ├── __init__.py
+│   └── chunker.py
+├── embeddings/
+│   ├── __init__.py
+│   └── embedder.py
+├── storage/
+│   ├── __init__.py
+│   ├── sqlite_store.py
+│   └── faiss_store.py
+├── retrieval/
+│   ├── __init__.py
+│   └── retriever.py
+├── generation/
+│   ├── __init__.py
+│   └── generator.py
+└── observability/
+    ├── __init__.py
+    ├── logger.py
+    └── langsmith_tracer.py
+
+main.py
+requirements.txt
 .env.example
 .gitignore
 README.md

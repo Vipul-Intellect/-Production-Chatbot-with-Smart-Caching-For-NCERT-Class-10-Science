@@ -1,0 +1,21 @@
+langchain
+langchain-core
+langchain-community
+beautifulsoup4
+pdfplumber
+pypdf
+pymupdf
+sentence-transformers
+faiss-cpu
+
+google-genai
+python-dotenv
+
+fastapi
+uvicorn
+streamlit
+redis
+
+# Evaluation & Observability (Phase 6 & 12)
+ragas
+langsmith

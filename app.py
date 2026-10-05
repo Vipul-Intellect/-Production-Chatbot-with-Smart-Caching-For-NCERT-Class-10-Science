@@ -4,8 +4,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Load .env from the parent directory since this is inside frontend/
-load_dotenv(Path(__file__).parent.parent / ".env")
+load_dotenv(Path(__file__).parent / ".env")
 
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
