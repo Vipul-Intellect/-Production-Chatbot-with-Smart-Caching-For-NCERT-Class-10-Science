@@ -87,8 +87,8 @@ def chat(session_id: str, message: str) -> dict[str, Any]:
         "cache_hit": False
     }
     
-    # 5. Cache Storage (Only if answer was actually grounded in context)
-    if not gen_result.get("no_context", True):
+    # 5. Cache Storage (Only if answer was actually grounded in context AND passed validation)
+    if gen_result.get("citation_validation_passed", False) and not gen_result.get("no_context", True):
         from rag_app.cache.semantic_cache import write_to_semantic_cache
         write_to_semantic_cache(message.strip(), response_data)
         
