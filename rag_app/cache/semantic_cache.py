@@ -101,7 +101,7 @@ def check_semantic_cache(query: str) -> dict | None:
             
         # CrossEncoder safety check for semantic correctness
         reranker = _get_reranker()
-        cross_score = reranker.predict([(query, cached_q)])
+        cross_score = float(reranker.predict([(query, cached_q)])[0])
         
         if cross_score > 2.0:
             best_cache_id = cache_id
