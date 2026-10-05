@@ -1,27 +1,25 @@
 import streamlit as st
-import requests
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 
+# Load env variables (for local testing, Streamlit Cloud uses Secrets)
 load_dotenv(Path(__file__).parent / ".env")
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+# We import the orchestrator directly! No FastAPI, no Render needed!
+from rag_app.orchestrator import chat, generate_session_id
+from rag_app.storage.app_store import create_session
 
 st.set_page_config(page_title="NCERT Science Assistant", page_icon="🔬")
 
 st.title("NCERT Class 10 Science Assistant")
 
-# Initialize session
+# Initialize session locally instead of hitting an API
 if "session_id" not in st.session_state:
-    try:
-        resp = requests.post(f"{API_URL}/session", timeout=5)
-        resp.raise_for_status()
-        st.session_state.session_id = resp.json()["session_id"]
-        st.session_state.messages = []
-    except requests.exceptions.RequestException:
-        st.error(f"Could not connect to the backend API at {API_URL}.")
-        st.stop()
+    session_id = generate_session_id()
+    create_session(session_id)
+    st.session_state.session_id = session_id
+    st.session_state.messages = []
 
 # Sidebar
 with st.sidebar:
@@ -43,43 +41,35 @@ if prompt := st.chat_input("Ask a question about NCERT Class 10 Science..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Call API
+    # Generate Response Directly (No API Call)
     with st.chat_message("assistant"):
-        with st.spinner("Searching NCERT database..."):
+        with st.spinner("Searching NCERT database & running AI models..."):
             try:
-                resp = requests.post(
-                    f"{API_URL}/chat", 
-                    json={"session_id": st.session_state.session_id, "message": prompt},
-                    timeout=60
-                )
+                # Call the orchestrator directly!
+                data = chat(st.session_state.session_id, prompt)
                 
-                if resp.status_code == 200:
-                    data = resp.json()
+                reply = data.get("reply", "Error")
+                cache_hit = data.get("cache_hit", False)
+                latency = data.get("latency_ms", 0)
+                citations = data.get("citations", [])
+                
+                # Format citations
+                c_text = "  \n".join([f"**{c['label']}**: {c['source']}" for c in citations])
+                
+                st.markdown(reply)
+                
+                meta_str = f"Cache: {'HIT' if cache_hit else 'MISS'} | Latency: {latency} ms"
+                if c_text:
+                    meta_str += f"  \n\n**Sources:**  \n{c_text}"
                     
-                    reply = data.get("reply", "Error")
-                    cache_hit = data.get("cache_hit", False)
-                    latency = data.get("latency_ms", 0)
-                    citations = data.get("citations", [])
+                st.caption(meta_str)
+                
+                # Save to history
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": reply,
+                    "meta": meta_str
+                })
                     
-                    # Format citations
-                    c_text = "  \n".join([f"**{c['label']}**: {c['source']}" for c in citations])
-                    
-                    st.markdown(reply)
-                    
-                    meta_str = f"Cache: {'HIT' if cache_hit else 'MISS'} | Latency: {latency} ms"
-                    if c_text:
-                        meta_str += f"  \n\n**Sources:**  \n{c_text}"
-                        
-                    st.caption(meta_str)
-                    
-                    # Save to history
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": reply,
-                        "meta": meta_str
-                    })
-                else:
-                    st.error(f"API Error: {resp.status_code} - {resp.text}")
-                    
-            except requests.exceptions.RequestException as e:
-                st.error("Failed to communicate with the backend API.")
+            except Exception as e:
+                st.error(f"An internal error occurred: {e}")
