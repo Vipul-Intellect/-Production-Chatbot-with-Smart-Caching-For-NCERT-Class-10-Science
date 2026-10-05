@@ -13,6 +13,7 @@ python-dotenv
 
 fastapi
 uvicorn
+gunicorn
 streamlit
 redis
 
