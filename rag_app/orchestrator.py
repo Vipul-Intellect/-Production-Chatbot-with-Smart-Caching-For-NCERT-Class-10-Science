@@ -58,7 +58,7 @@ def chat(session_id: str, message: str) -> dict[str, Any]:
     
     # 3. FAISS + SQLite + CrossEncoder Retrieval
     try:
-        retrieval_result = retrieve_context(query=search_query, k=3, candidate_k=15)
+        retrieval_result = retrieve_context(query=search_query, k=6, candidate_k=15)
     except Exception as e:
         logger.error(f"Retrieval failed: {e}")
         raise RuntimeError("Failed to retrieve context.")
