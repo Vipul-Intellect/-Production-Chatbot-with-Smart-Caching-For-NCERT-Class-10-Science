@@ -35,12 +35,12 @@ def chat(session_id: str, message: str) -> dict[str, Any]:
         
     logger.info(f"Orchestrator received message for session {session_id}")
     
-    # 1. Smart Cache Lookup
-    cached = get_cached_response(message.strip().lower())
+    # 1. Smart Semantic Cache Lookup
+    from rag_app.cache.semantic_cache import check_semantic_cache
+    
+    cached = check_semantic_cache(message.strip())
     if cached:
-        logger.info("Cache HIT.")
-        cached["cache_hit"] = True
-        cached["latency_ms"] = int((time.perf_counter() - start_time) * 1000)
+        # Cache hit metadata added in semantic_cache.py
         
         # Update session history even on cache hit
         history = get_session_history(session_id)
@@ -89,7 +89,8 @@ def chat(session_id: str, message: str) -> dict[str, Any]:
     
     # 5. Cache Storage (Only if answer was actually grounded in context)
     if not gen_result.get("no_context", True):
-        set_cached_response(message.strip().lower(), response_data)
+        from rag_app.cache.semantic_cache import write_to_semantic_cache
+        write_to_semantic_cache(message.strip(), response_data)
         
     # 6. Update SQLite Session History
     history.append({"role": "user", "content": message})
