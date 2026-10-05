@@ -52,16 +52,18 @@ def chat(session_id: str, message: str) -> dict[str, Any]:
 
     logger.info("Cache MISS.")
     
-    # 2. Session Context Injection
+    # 2. Retrieve using RAW message (pure semantic vector)
     history = get_session_history(session_id)
-    search_query = rewrite_query_with_history(message, history)
     
     # 3. FAISS + SQLite + CrossEncoder Retrieval
     try:
-        retrieval_result = retrieve_context(query=search_query, k=6, candidate_k=15)
+        retrieval_result = retrieve_context(query=message, k=6, candidate_k=15)
     except Exception as e:
         logger.error(f"Retrieval failed: {e}")
         raise RuntimeError("Failed to retrieve context.")
+
+    # 3.5 Inject conversation history into the query FOR GEMINI ONLY
+    retrieval_result["query"] = rewrite_query_with_history(message, history)
 
     # 4. Grounded Gemini Generation
     try:
