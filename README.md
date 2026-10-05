@@ -1,5 +1,7 @@
 # NCERT Class 10 Science Assistant (AI Intern Assignment)
 
+**Live Demo:** [NCERT Science Assistant on Streamlit](https://cqrlq2edpqgshwhtvfk9cf.streamlit.app/)
+
 ## 1. Local Execution Setup
 Follow these steps to run the complete pipeline and application locally.
 
