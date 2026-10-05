@@ -48,6 +48,12 @@ Follow these steps to run the complete pipeline and application locally.
    uvicorn main:app --reload
    ```
 
+8. **Test the Cache (Instantly!):**
+   To experience a `< 100ms` Cache HIT without needing an LLM, copy and paste any of these pre-seeded questions into the Streamlit Chat:
+   - *"What is the primary function of the human eye?"*
+   - *"On what basis can elements be classified into metals and non-metals?"*
+   - *"What happens to the compass needle when an electric current is passed through a nearby copper wire, as demonstrated in Activity 12.1?"*
+
 ---
 
 ## 2. One-Page Explainer: Architecture & Approach
