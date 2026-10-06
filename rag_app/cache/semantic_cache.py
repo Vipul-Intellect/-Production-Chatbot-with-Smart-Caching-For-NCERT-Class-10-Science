@@ -50,7 +50,13 @@ def has_contradictory_terms(q1: str, q2: str) -> bool:
     w2 = set(re.findall(r'\b[a-z]+\b', q2.lower()))
     
     for a, b in pairs:
-        if (w1.intersection(a) and w2.intersection(b)) or (w1.intersection(b) and w2.intersection(a)):
+        q1_a = bool(w1.intersection(a))
+        q1_b = bool(w1.intersection(b))
+        q2_a = bool(w2.intersection(a))
+        q2_b = bool(w2.intersection(b))
+        
+        if (q1_a and not q1_b and q2_b and not q2_a) or \
+           (q1_b and not q1_a and q2_a and not q2_b):
             return True
     return False
 

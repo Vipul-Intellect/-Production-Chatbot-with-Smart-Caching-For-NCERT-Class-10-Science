@@ -68,13 +68,7 @@ def seed():
     for parent in parents:
         content = parent["text"]
         
-        import json
-        try:
-            metadata = json.loads(parent.get("metadata", "{}"))
-        except:
-            metadata = {}
-            
-        source_file = metadata.get("source_file", "Unknown Chapter")
+        source_file = parent.get("source_file", "Unknown Chapter")
         
         qa = generate_qa_pairs(client, gen_model, content)
         if not qa:
