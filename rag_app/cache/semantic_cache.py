@@ -103,7 +103,7 @@ def check_semantic_cache(query: str) -> dict | None:
         reranker = _get_reranker()
         cross_score = float(reranker.predict([(query, cached_q)])[0])
         
-        if cross_score > 2.0:
+        if cross_score > 1.5:
             best_cache_id = cache_id
             break
         else:
